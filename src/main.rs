@@ -1,6 +1,98 @@
 mod ml_data;
+use crate::ml_data::{Node, read_ml_json};
+use std::path::Path;
+use std::string::String;
+use std::collections::HashMap;
+use core::cmp::max;
 
-fn main() {}
+
+fn main() {
+
+    println!("hello world");
+
+    let path1 = Path::new("/Users/villacu/prog_local/cimat_private/prog1/rust/topo_git/rust-tutorial/resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
+    let path2 = Path::new("/Users/villacu/prog_local/cimat_private/prog1/rust/topo_git/rust-tutorial/resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
+
+    let data1 = read_ml_json(&path1);
+    let data2 = read_ml_json(&path2);
+
+    let data2_node_num:usize  = data2.element_statistics.nodes.len();
+    println!("length data2 is {}",data2_node_num);
+
+
+    //1.- find node with XX=true
+
+    let mut xx_node:i32 = 0;    
+    let mut count = 0;
+    for node_i in &data1.element_statistics.nodes{
+            //println!("Checking node {}",node_i.i);
+            if node_i.a.contains_key("XX"){
+                //xx_node = node_i.i.clone();
+                //println!("{}",count);
+                xx_node = count;
+            }
+            count +=1;
+    }
+
+    println!("XX at index {} i value is {}",xx_node,&data1.element_statistics.nodes[xx_node as usize].i); //xx node is
+
+    //2.- clone node to temporary hash map
+    let mut reference_hashmap:HashMap<String,String>= HashMap::new();
+    let keepout:[String;4]= [ //keys to ignore
+        "XX".to_string(),
+        "WH".to_string(),
+        "HT".to_string(),
+        "TF".to_string()];
+    
+    //copies into reference hashmap
+    for (k, v) in data1.element_statistics.nodes[xx_node as usize].a.iter() {
+        //println!("k={}, v={}", k, v);
+        if !keepout.contains(k){
+            println!("AA");
+            reference_hashmap.insert(k.to_string(),v.to_string()); //only keep keys that we care about    
+        }
+        println!("k={}, v={}", k, v);
+        
+    }
+    
+    //3.- compute ~correlation~ list
+
+    let mut corr_vec: Vec<i64> = Vec::new(); //we must use a vector since arrays require constant length to be defined at compilation time
+    let mut coinc_count:i64 = 0;
+
+    for node_i in &data2.element_statistics.nodes{
+        //checks all the nodes in data 2
+        coinc_count = 0;
+
+        //compare with reference hashmap
+        for (k, v) in reference_hashmap.iter() {
+            if node_i.a.contains_key(k){
+                if &node_i.a[k]==v{
+                    coinc_count += 1;
+                }
+            }
+        }
+
+        corr_vec.push(coinc_count.clone());
+    }
+
+    println!("{:?}",corr_vec);
+    println!("max value {}",corr_vec[513]);
+
+    let mut max_val:i64 = -1;
+    for i in corr_vec.iter(){
+        if (*i>max_val){
+            max_val = *i;
+        }
+    }
+    println!("max value {}",&max_val);
+
+
+}
+
+fn node_correlation(node1: Node,node2: Node) ->f64{
+    todo!();
+}
 
 fn consume_s(s: String) -> usize {
     s.len()
@@ -10,6 +102,8 @@ enum State<T, Q = i32> {
     ON(Q),
     OFF(T),
 }
+
+
 
 mod topology {
     pub struct Point {
