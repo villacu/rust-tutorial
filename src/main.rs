@@ -10,8 +10,8 @@ fn main() {
 
     println!("hello world");
 
-    let path1 = Path::new("/Users/villacu/prog_local/cimat_private/prog1/rust/topo_git/rust-tutorial/resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
-    let path2 = Path::new("/Users/villacu/prog_local/cimat_private/prog1/rust/topo_git/rust-tutorial/resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
+    let path1 = Path::new("resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
+    let path2 = Path::new("resources/1663154348643_8ZGUJJLLWV/ml_data/1663154348643_8ZGUJJLLWV.json");
 
     let data1 = read_ml_json(&path1);
     let data2 = read_ml_json(&path2);
@@ -38,11 +38,13 @@ fn main() {
 
     //2.- clone node to temporary hash map
     let mut reference_hashmap:HashMap<String,String>= HashMap::new();
-    let keepout:[String;4]= [ //keys to ignore
+    let keepout:[String;5]= [ //keys to ignore
         "XX".to_string(),
         "WH".to_string(),
         "HT".to_string(),
-        "TF".to_string()];
+        "TP".to_string(),
+        "LT".to_string()
+        ];
     
     //copies into reference hashmap
     for (k, v) in data1.element_statistics.nodes[xx_node as usize].a.iter() {
@@ -77,7 +79,7 @@ fn main() {
     }
 
     println!("{:?}",corr_vec);
-    println!("max value {}",corr_vec[513]);
+    
 
     let mut max_val:i64 = -1;
     for i in corr_vec.iter(){
@@ -85,7 +87,19 @@ fn main() {
             max_val = *i;
         }
     }
+
     println!("max value {}",&max_val);
+
+    //new vector with normalized values
+    let mut corr_vec_norm: Vec<f64> = Vec::new(); //we must use a vector since arrays require constant length to be defined at compilation time
+    let mut tmp:f64 =0.0;
+    for i in corr_vec.iter(){
+        tmp = (i.clone() as f64)/(max_val as f64);
+        corr_vec_norm.push(tmp);
+    }
+
+    println!("Normalized correlation list:");
+    println!("{:?}",corr_vec_norm);
 
 
 }
