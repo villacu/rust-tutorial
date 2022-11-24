@@ -4,7 +4,11 @@ use std::path::Path;
 use std::string::String;
 use std::collections::HashMap;
 use core::cmp::max;
-
+/*
+Calcula vector de correlaciones de nodo XX=True con todos los demás (y lo imprime)
+despues encuentra el máximo y lo usa para normalizarlo (imprime el máximo)
+finalmente imprime el vector de ~correlaciones~ normalizado
+*/
 
 fn main() {
 
@@ -49,12 +53,9 @@ fn main() {
     //copies into reference hashmap
     for (k, v) in data1.element_statistics.nodes[xx_node as usize].a.iter() {
         //println!("k={}, v={}", k, v);
-        if !keepout.contains(k){
-            println!("AA");
+        if !keepout.contains(k){   
             reference_hashmap.insert(k.to_string(),v.to_string()); //only keep keys that we care about    
         }
-        println!("k={}, v={}", k, v);
-        
     }
     
     //3.- compute ~correlation~ list
@@ -75,7 +76,7 @@ fn main() {
             }
         }
 
-        corr_vec.push(coinc_count.clone());
+        corr_vec.push(coinc_count);
     }
 
     println!("{:?}",corr_vec);
@@ -100,7 +101,6 @@ fn main() {
 
     println!("Normalized correlation list:");
     println!("{:?}",corr_vec_norm);
-
 
 }
 
